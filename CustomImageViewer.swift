@@ -1,0 +1,240 @@
+//
+//  CustomImageViewer.swift
+//
+//  Created by Siddhesh jadhav on 23/12/21.
+//  Copyright © 2021 Apple. All rights reserved.
+//
+
+import UIKit
+
+protocol CustomImageViewerDelegate: AnyObject {
+    func imageViewerClosed()
+}
+
+enum IndexValue{
+    case up
+    case down
+}
+
+class CustomImageViewer: UIView {
+    
+    let nibName = "CustomImageViewer"
+    
+    //MARK: - @IBOutlet
+    @IBOutlet weak var imageCollectionView: UICollectionView!
+    @IBOutlet weak var closeBtn: UIButton!
+    @IBOutlet weak var nextBtn: UIButton!
+    @IBOutlet weak var backBtn: UIButton!
+    @IBOutlet var view: UIView!
+    @IBOutlet weak var mainImageView: UIImageView!
+    @IBOutlet weak var imageScrollView: UIScrollView!
+    
+    // MARK: - Class properties
+    weak var delegate: CustomImageViewerDelegate?
+    
+    var imageArr:[UIImage] = []
+    
+    var arrayCount = 0
+    var currentIndex = 0
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        xibSetUp()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        xibSetUp()
+    }
+    
+    deinit {
+        
+    }
+    
+    //MARK: - UserDefined Functions
+    
+    func loadViewFromNib() -> UIView {
+        let bundle = Bundle(for: type(of: self))
+        let nib = UINib(nibName: nibName, bundle: bundle)
+        return nib.instantiate(withOwner: self, options: nil).first as! UIView
+    }
+    
+    //MARK: SetUp
+    func xibSetUp() {
+        view = loadViewFromNib()
+        view.frame = self.bounds
+        view.autoresizingMask = [UIView.AutoresizingMask.flexibleWidth, UIView.AutoresizingMask.flexibleHeight]
+        addSubview(view)
+        
+        self.imageCollectionView.register(UINib(nibName: "CustomImageViewerCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "CustomImageViewerCollectionViewCell")
+        imageCollectionView.delegate = self
+        imageCollectionView.dataSource = self
+        
+        let layout = UICollectionViewFlowLayout()
+        if Config.iPadDevice{
+            layout.itemSize = CGSize(width: 110, height: 110)
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        }else{
+            layout.itemSize = CGSize(width: 80, height: 80)
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        }
+        layout.minimumInteritemSpacing = 0
+        layout.scrollDirection = .horizontal
+        imageCollectionView.collectionViewLayout = layout
+        
+        currentIndex = 0
+        
+        if Config.iPadDevice{
+            closeBtn.setImage(UIImage(named: "close-iPad"), for: .normal)
+            backBtn.setImage(UIImage(named: "back-1-iPad"), for: .normal)
+            nextBtn.setImage(UIImage(named: "next-iPad"), for: .normal)
+        }
+        
+        imageScrollView.delegate = self as UIScrollViewDelegate
+        imageScrollView.minimumZoomScale = 1
+        imageScrollView.maximumZoomScale = 3
+    }
+    
+    func updateCell(atIndex: Int, atSection: Int, value: IndexValue){
+        nextBtn.isHidden = false
+        backBtn.isHidden = false
+        var indexPath:IndexPath = IndexPath(item: currentIndex, section: 0)
+        imageCollectionView.cellForItem(at: indexPath)?.isSelected = false
+        value == .up ? (currentIndex += 1) : (currentIndex -= 1)
+        indexPath = IndexPath(item: currentIndex, section: 0)
+        self.mainImageView.image = self.imageArr[currentIndex]
+        imageCollectionView.cellForItem(at: indexPath)?.isSelected = true
+    }
+    
+    //MARK: - @IBAction UIButton
+    @IBAction func backArrowAction(_ sender: UIButton) {
+        imageScrollView.zoomScale = 1
+        if currentIndex == 0{
+            backBtn.isHidden = true
+        }else{
+            if !imageArr.isEmpty{
+                updateCell(atIndex: currentIndex, atSection: 0, value: .down)
+            }
+        }
+    }
+    
+    @IBAction func nextArrowAction(_ sender: UIButton) {
+        imageScrollView.zoomScale = 1
+        if currentIndex == arrayCount{
+            nextBtn.isHidden = true
+        }else{
+            if !imageArr.isEmpty{
+                updateCell(atIndex: currentIndex, atSection: 0, value: .up)
+            }
+        }
+    }
+    
+    @IBAction func closeImageViewerAction(_ sender: UIButton) {
+        imageScrollView.zoomScale = 1
+        delegate?.imageViewerClosed()
+    }
+    
+}
+
+//MARK: - UICollectionViewDelegate
+extension CustomImageViewer: UICollectionViewDelegate, UICollectionViewDataSource{
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if imageArr.count == 1{
+            backBtn.isHidden = true
+            nextBtn.isHidden = true
+        }else{
+            backBtn.isHidden = false
+            nextBtn.isHidden = false
+        }
+        return self.imageArr.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CustomImageViewerCollectionViewCell", for: indexPath) as! CustomImageViewerCollectionViewCell
+        cell.imageView.image = self.imageArr[indexPath.row]
+        if self.currentIndex == indexPath.row{
+            self.mainImageView.image = self.imageArr[currentIndex]
+            cell.isSelected = true
+        }
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let selectedIndexPath:IndexPath = IndexPath(item: currentIndex, section: 0)
+        collectionView.cellForItem(at: selectedIndexPath)?.isSelected = false
+        
+        imageScrollView.zoomScale = 1
+        self.currentIndex = indexPath.row
+        self.mainImageView.image = self.imageArr[indexPath.row]
+        
+        if currentIndex == 0{
+            backBtn.isHidden = true
+            nextBtn.isHidden = false
+        }else if currentIndex == arrayCount{
+            nextBtn.isHidden = true
+            backBtn.isHidden = false
+        }else{
+            backBtn.isHidden = false
+            nextBtn.isHidden = false
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if Config.iPadDevice{
+            return CGSize(width: 110, height: 110)
+        }else{
+            return CGSize(width: 80, height: 80)
+        }
+    }
+}
+
+//MARK: - UIScrollViewDelegate
+extension CustomImageViewer: UIScrollViewDelegate{
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return mainImageView
+    }
+}
+
+
+/*
+ USES : - Add Custom Image Viewer folder into project
+ 
+class CustomImageViewerExample {
+ 
+    // step 1
+    @IBOutlet var customImageViewer: CustomImageViewer!
+    
+    // data
+    let imageArray:[UIImage] = []
+    
+    override func viewDidLoad() {
+        // step 2
+        customImageViewer.frame = self.view.frame
+        self.view.addSubview(customImageViewer)
+        customImageViewer.isHidden = true
+        customImageViewer.delegate = self
+    }
+    
+    // step 4
+    func openImageViewer(){
+        if !imageArray.isEmpty{
+            customImageViewer.isHidden = false
+            customImageViewer.imageArr = self.imageArray
+            customImageViewer.arrayCount = (self.imageArray.count - 1)
+            customImageViewer.currentIndex = 0
+            customImageViewer.imageCollectionView.reloadData()
+            self.view.bringSubviewToFront(customImageViewer)
+        }
+    }
+}
+
+ // step 3
+extension CustomImageViewerExample: CustomImageViewerDelegate{
+    func imageViewerClosed(){
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.customImageViewer.isHidden = true
+    }
+}
+
+*/
