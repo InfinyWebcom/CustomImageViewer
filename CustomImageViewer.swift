@@ -11,7 +11,7 @@ protocol CustomImageViewerDelegate: AnyObject {
     func imageViewerClosed()
 }
 
-enum IndexValue{
+enum IndexChangeDirection{
     case up
     case down
 }
@@ -32,10 +32,16 @@ class CustomImageViewer: UIView {
     // MARK: - Class properties
     weak var delegate: CustomImageViewerDelegate?
     
-    var imageArr:[UIImage] = []
+    private var arrayCount = 0
+    private var currentIndex = 0
     
-    var arrayCount = 0
-    var currentIndex = 0
+    var imageArr:[UIImage] = []{
+        didSet{
+            currentIndex = 0
+            arrayCount = (imageArr.count - 1)
+            imageCollectionView.reloadData()
+        }
+    }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -53,14 +59,14 @@ class CustomImageViewer: UIView {
     
     //MARK: - UserDefined Functions
     
-    func loadViewFromNib() -> UIView {
+    private func loadViewFromNib() -> UIView {
         let bundle = Bundle(for: type(of: self))
         let nib = UINib(nibName: nibName, bundle: bundle)
         return nib.instantiate(withOwner: self, options: nil).first as! UIView
     }
     
     //MARK: SetUp
-    func xibSetUp() {
+    private func xibSetUp() {
         view = loadViewFromNib()
         view.frame = self.bounds
         view.autoresizingMask = [UIView.AutoresizingMask.flexibleWidth, UIView.AutoresizingMask.flexibleHeight]
@@ -95,41 +101,41 @@ class CustomImageViewer: UIView {
         imageScrollView.maximumZoomScale = 3
     }
     
-    func updateCell(atIndex: Int, atSection: Int, value: IndexValue){
+    private func updateCell(atIndex: Int, atSection: Int, direction: IndexChangeDirection){
         nextBtn.isHidden = false
         backBtn.isHidden = false
         var indexPath:IndexPath = IndexPath(item: currentIndex, section: 0)
         imageCollectionView.cellForItem(at: indexPath)?.isSelected = false
-        value == .up ? (currentIndex += 1) : (currentIndex -= 1)
+        direction == .up ? (currentIndex += 1) : (currentIndex -= 1)
         indexPath = IndexPath(item: currentIndex, section: 0)
         self.mainImageView.image = self.imageArr[currentIndex]
         imageCollectionView.cellForItem(at: indexPath)?.isSelected = true
     }
     
     //MARK: - @IBAction UIButton
-    @IBAction func backArrowAction(_ sender: UIButton) {
+    @IBAction private func backArrowAction(_ sender: UIButton) {
         imageScrollView.zoomScale = 1
         if currentIndex == 0{
             backBtn.isHidden = true
         }else{
             if !imageArr.isEmpty{
-                updateCell(atIndex: currentIndex, atSection: 0, value: .down)
+                updateCell(atIndex: currentIndex, atSection: 0, direction: .down)
             }
         }
     }
     
-    @IBAction func nextArrowAction(_ sender: UIButton) {
+    @IBAction private func nextArrowAction(_ sender: UIButton) {
         imageScrollView.zoomScale = 1
         if currentIndex == arrayCount{
             nextBtn.isHidden = true
         }else{
             if !imageArr.isEmpty{
-                updateCell(atIndex: currentIndex, atSection: 0, value: .up)
+                updateCell(atIndex: currentIndex, atSection: 0, direction: .up)
             }
         }
     }
     
-    @IBAction func closeImageViewerAction(_ sender: UIButton) {
+    @IBAction private func closeImageViewerAction(_ sender: UIButton) {
         imageScrollView.zoomScale = 1
         delegate?.imageViewerClosed()
     }
@@ -221,9 +227,6 @@ class CustomImageViewerExample {
         if !imageArray.isEmpty{
             customImageViewer.isHidden = false
             customImageViewer.imageArr = self.imageArray
-            customImageViewer.arrayCount = (self.imageArray.count - 1)
-            customImageViewer.currentIndex = 0
-            customImageViewer.imageCollectionView.reloadData()
             self.view.bringSubviewToFront(customImageViewer)
         }
     }
