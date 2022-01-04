@@ -45,7 +45,7 @@
                             </constraints>
                         </scrollView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jA4-1I-395">
-                            <rect key="frame" x="5" y="318" width="30" height="100"/>
+                            <rect key="frame" x="5" y="270.66666666666669" width="30" height="100"/>
                             <color key="backgroundColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="30" id="0Tu-sg-9vy">
@@ -63,7 +63,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhd-3w-b8j">
-                            <rect key="frame" x="379" y="318" width="30" height="100"/>
+                            <rect key="frame" x="379" y="270.66666666666669" width="30" height="100"/>
                             <color key="backgroundColor" white="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="100" id="vRz-u7-clE">
@@ -132,11 +132,10 @@
                         <constraint firstAttribute="trailing" secondItem="sJP-hr-Nd6" secondAttribute="trailing" constant="10" id="HRL-fk-V0B">
                             <variation key="heightClass=regular-widthClass=regular" constant="20"/>
                         </constraint>
+                        <constraint firstItem="yhd-3w-b8j" firstAttribute="centerY" secondItem="H84-OU-L7g" secondAttribute="centerY" id="KFo-iK-VYH"/>
                         <constraint firstAttribute="trailing" secondItem="GDn-9c-Z7i" secondAttribute="trailing" constant="5" id="KN9-u3-6pa">
                             <variation key="heightClass=regular-widthClass=regular" constant="10"/>
                         </constraint>
-                        <constraint firstItem="jA4-1I-395" firstAttribute="centerY" secondItem="qK5-f9-MFu" secondAttribute="centerY" id="LF6-Qd-HDg"/>
-                        <constraint firstItem="yhd-3w-b8j" firstAttribute="centerY" secondItem="qK5-f9-MFu" secondAttribute="centerY" id="QRk-oi-MQe"/>
                         <constraint firstItem="GDn-9c-Z7i" firstAttribute="leading" secondItem="qK5-f9-MFu" secondAttribute="leading" constant="5" id="XhB-pZ-WnP">
                             <variation key="heightClass=regular-widthClass=regular" constant="10"/>
                         </constraint>
@@ -148,6 +147,7 @@
                         <constraint firstItem="yhd-3w-b8j" firstAttribute="leading" secondItem="ndb-3a-8Z9" secondAttribute="trailing" id="d8f-9h-sfU">
                             <variation key="heightClass=regular-widthClass=regular" constant="50"/>
                         </constraint>
+                        <constraint firstItem="jA4-1I-395" firstAttribute="centerY" secondItem="H84-OU-L7g" secondAttribute="centerY" id="hSk-7L-Ccb"/>
                         <constraint firstItem="ndb-3a-8Z9" firstAttribute="leading" secondItem="jA4-1I-395" secondAttribute="trailing" id="lsC-jZ-65E">
                             <variation key="heightClass=regular-widthClass=regular" constant="50"/>
                         </constraint>
