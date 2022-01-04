@@ -102,8 +102,17 @@ class CustomImageViewer: UIView {
     }
     
     private func updateCell(atIndex: Int, atSection: Int, direction: IndexChangeDirection){
-        nextBtn.isHidden = false
-        backBtn.isHidden = false
+        defer{
+            if currentIndex == 0{
+                backBtn.isHidden = true
+            }else if currentIndex == arrayCount{
+                nextBtn.isHidden = true
+            }else{
+                nextBtn.isHidden = false
+                backBtn.isHidden = false
+            }
+        }
+        
         var indexPath:IndexPath = IndexPath(item: currentIndex, section: 0)
         imageCollectionView.cellForItem(at: indexPath)?.isSelected = false
         direction == .up ? (currentIndex += 1) : (currentIndex -= 1)
@@ -116,23 +125,15 @@ class CustomImageViewer: UIView {
     //MARK: - @IBAction UIButton
     @IBAction private func backArrowAction(_ sender: UIButton) {
         imageScrollView.zoomScale = 1
-        if currentIndex == 0{
-            backBtn.isHidden = true
-        }else{
-            if !imageArr.isEmpty{
-                updateCell(atIndex: currentIndex, atSection: 0, direction: .down)
-            }
+        if !imageArr.isEmpty && currentIndex != 0{
+            updateCell(atIndex: currentIndex, atSection: 0, direction: .down)
         }
     }
     
     @IBAction private func nextArrowAction(_ sender: UIButton) {
         imageScrollView.zoomScale = 1
-        if currentIndex == arrayCount{
-            nextBtn.isHidden = true
-        }else{
-            if !imageArr.isEmpty{
-                updateCell(atIndex: currentIndex, atSection: 0, direction: .up)
-            }
+        if !imageArr.isEmpty && currentIndex != arrayCount{
+            updateCell(atIndex: currentIndex, atSection: 0, direction: .up)
         }
     }
     
