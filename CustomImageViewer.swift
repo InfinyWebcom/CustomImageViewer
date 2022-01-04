@@ -110,6 +110,7 @@ class CustomImageViewer: UIView {
         indexPath = IndexPath(item: currentIndex, section: 0)
         self.mainImageView.image = self.imageArr[currentIndex]
         imageCollectionView.cellForItem(at: indexPath)?.isSelected = true
+        imageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
     
     //MARK: - @IBAction UIButton
@@ -169,6 +170,7 @@ extension CustomImageViewer: UICollectionViewDelegate, UICollectionViewDataSourc
         
         let selectedIndexPath:IndexPath = IndexPath(item: currentIndex, section: 0)
         collectionView.cellForItem(at: selectedIndexPath)?.isSelected = false
+        collectionView.scrollToItem(at: selectedIndexPath, at: .centeredHorizontally, animated: true)
         
         imageScrollView.zoomScale = 1
         self.currentIndex = indexPath.row
