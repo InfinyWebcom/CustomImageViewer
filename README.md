@@ -40,3 +40,8 @@ extension CustomImageViewerExample: CustomImageViewerDelegate{
 }
 
 ```
+
+![IMG_0815](https://user-images.githubusercontent.com/96616754/148023932-96947599-de6f-46e9-b2bf-72d9a5ac0ef6.PNG)
+
+https://user-images.githubusercontent.com/96616754/148023948-597b246e-a3eb-4992-814a-507aebf6858d.mp4
+
