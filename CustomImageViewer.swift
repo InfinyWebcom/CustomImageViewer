@@ -35,6 +35,9 @@ class CustomImageViewer: UIView {
     private var arrayCount = 0
     private var currentIndex = 0
     
+    private var minimumZoomScale:CGFloat = 1
+    var maximumZoomScale:CGFloat = 3
+    
     var imageArr:[UIImage] = []{
         didSet{
             currentIndex = 0
@@ -97,8 +100,8 @@ class CustomImageViewer: UIView {
         }
         
         imageScrollView.delegate = self as UIScrollViewDelegate
-        imageScrollView.minimumZoomScale = 1
-        imageScrollView.maximumZoomScale = 3
+        imageScrollView.minimumZoomScale = self.minimumZoomScale
+        imageScrollView.maximumZoomScale = self.maximumZoomScale
     }
     
     private func updateCell(atIndex: Int, atSection: Int, direction: IndexChangeDirection){
@@ -124,21 +127,21 @@ class CustomImageViewer: UIView {
     
     //MARK: - @IBAction UIButton
     @IBAction private func backArrowAction(_ sender: UIButton) {
-        imageScrollView.zoomScale = 1
+        imageScrollView.zoomScale = self.minimumZoomScale
         if !imageArr.isEmpty && currentIndex != 0{
             updateCell(atIndex: currentIndex, atSection: 0, direction: .down)
         }
     }
     
     @IBAction private func nextArrowAction(_ sender: UIButton) {
-        imageScrollView.zoomScale = 1
+        imageScrollView.zoomScale = self.minimumZoomScale
         if !imageArr.isEmpty && currentIndex != arrayCount{
             updateCell(atIndex: currentIndex, atSection: 0, direction: .up)
         }
     }
     
     @IBAction private func closeImageViewerAction(_ sender: UIButton) {
-        imageScrollView.zoomScale = 1
+        imageScrollView.zoomScale = self.minimumZoomScale
         delegate?.imageViewerClosed()
     }
     
@@ -171,9 +174,9 @@ extension CustomImageViewer: UICollectionViewDelegate, UICollectionViewDataSourc
         
         let selectedIndexPath:IndexPath = IndexPath(item: currentIndex, section: 0)
         collectionView.cellForItem(at: selectedIndexPath)?.isSelected = false
-        collectionView.scrollToItem(at: selectedIndexPath, at: .centeredHorizontally, animated: true)
+        collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         
-        imageScrollView.zoomScale = 1
+        imageScrollView.zoomScale = self.minimumZoomScale
         self.currentIndex = indexPath.row
         self.mainImageView.image = self.imageArr[indexPath.row]
         
